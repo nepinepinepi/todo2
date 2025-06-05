@@ -1,0 +1,7 @@
+{
+  "name": "todoapp-root",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "make test"
+  }
+}

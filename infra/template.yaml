@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: TodoApp SAM Template
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Handler: dist/todos.handler
+    Timeout: 10
+Resources:
+  TodosTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TableName
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+  TodosFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /todos/{id?}
+            Method: ANY
+Parameters:
+  TableName:
+    Type: String
+    Default: Todos
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
