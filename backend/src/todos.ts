@@ -3,11 +3,12 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand, PutCommand, GetCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
 const ddbClient = new DynamoDBClient({
-  endpoint: process.env.DYNAMODB_ENDPOINT,
+  endpoint: process.env.DYNAMODB_ENDPOINT || process.env.AWS_ENDPOINT_URL,
   region: 'us-east-1'
 });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 const TABLE_NAME = process.env.TABLE_NAME || 'Todos';
+const STAGE = process.env.STAGE || 'dev';
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   const method = event.requestContext.http.method;
@@ -24,7 +25,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     }
     if (method === 'POST') {
       const body = JSON.parse(event.body || '{}');
-      const item = { id: body.id, title: body.title, completed: false };
+      const item = { id: body.id, title: body.title, completed: false, stage: STAGE };
       await docClient.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
       return { statusCode: 201, body: JSON.stringify(item) };
     }

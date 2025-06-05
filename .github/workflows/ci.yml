@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      localstack:
+        image: localstack/localstack:4.3
+        ports: ["4566:4566"]
+      dynamodb-local:
+        image: public.ecr.aws/aws-dynamodb-local/dynamodb-local:latest
+        ports: ["8000:8000"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: aws-actions/setup-sam@v2
+      - run: make bootstrap
+      - run: make test
