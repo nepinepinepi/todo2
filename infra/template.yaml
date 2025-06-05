@@ -25,6 +25,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          STAGE: !Ref StageName
       Events:
         Api:
           Type: HttpApi
@@ -35,6 +36,9 @@ Parameters:
   TableName:
     Type: String
     Default: Todos
+  StageName:
+    Type: String
+    Default: dev
 Outputs:
   ApiUrl:
     Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
